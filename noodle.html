@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>noodle — exam platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   noodle — design tokens
+   ============================================================ */
+:root {
+  --blue: #2b3ce5;
+  --blue-dark: #1f2cb8;
+  --blue-soft: #e4e8fb;
+  --blue-softer: #eef0fd;
+  --navy: #1d2939;
+  --ink: #3a4250;
+  --ink-light: #6b7280;
+  --bg: #f7f8fa;
+  --card: #ffffff;
+  --border: #e3e6ea;
+  --border-soft: #edeff2;
+  --badge-bg: #e9ecef;
+  --pink: #e7325c;
+  --pink-soft: #fde8ee;
+  --green: #1a9e57;
+  --green-soft: #e2f6ec;
+  --amber: #b97a09;
+  --amber-soft: #fdf3df;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 2px rgba(29,41,57,.05), 0 4px 16px rgba(29,41,57,.05);
+  --font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: var(--font); cursor: pointer; }
+input, textarea, select { font-family: var(--font); font-size: 14px; color: var(--navy); }
+
+.hidden { display: none !important; }
+
+/* ============================================================
+   Shared chrome
+   ============================================================ */
+.topbar {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.brand {
+  display: flex; align-items: center; gap: 9px;
+  font-weight: 800; font-size: 19px; color: var(--navy);
+  letter-spacing: -.3px; user-select: none;
+}
+.brand .bowl {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--pink-soft);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.breadcrumb {
+  font-size: 13px; color: var(--ink-light);
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.breadcrumb a { color: var(--ink-light); text-decoration: none; }
+.breadcrumb a:hover { color: var(--blue); text-decoration: underline; }
+.breadcrumb .sep { color: #c4c9d0; }
+
+.btn {
+  border: 1px solid var(--border);
+  background: #f0f1f3;
+  color: var(--navy);
+  border-radius: var(--radius-sm);
+  padding: 8px 18px;
+  font-size: 14px; font-weight: 500;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.btn:hover { background: #e7e9ec; }
+.btn:focus-visible, .navdot:focus-visible, .btn-primary:focus-visible, .btn-soft:focus-visible {
+  outline: 2px solid var(--blue); outline-offset: 2px;
+}
+.btn-primary {
+  background: var(--blue); color: #fff;
+  border: 1px solid var(--blue);
+  border-radius: var(--radius-sm);
+  padding: 9px 22px;
+  font-size: 14px; font-weight: 600;
+}
+.btn-primary:hover { background: var(--blue-dark); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-soft {
+  background: var(--blue-soft); color: var(--blue);
+  border: none; border-radius: var(--radius-sm);
+  padding: 9px 18px; font-size: 14px; font-weight: 600;
+}
+.btn-soft:hover { background: #d6dcf9; }
+
+/* ============================================================
+   Setup page
+   ============================================================ */
+#setup-page .wrap {
+  max-width: 1060px; margin: 0 auto; padding: 40px 28px 80px;
+}
+.setup-hero { margin-bottom: 30px; }
+.setup-hero h1 {
+  font-size: 30px; font-weight: 800; color: var(--navy);
+  letter-spacing: -.6px; display: flex; align-items: center; gap: 12px;
+}
+.setup-hero h1 .icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: var(--pink-soft); display: flex;
+  align-items: center; justify-content: center; font-size: 23px;
+}
+.setup-hero p { color: var(--ink-light); margin-top: 8px; max-width: 620px; }
+
+.setup-grid {
+  display: grid; grid-template-columns: 1fr 320px; gap: 22px;
+  align-items: start;
+}
+@media (max-width: 900px) { .setup-grid { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.panel-head {
+  padding: 16px 20px; border-bottom: 1px solid var(--border-soft);
+  font-weight: 700; color: var(--navy); font-size: 15px;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.panel-body { padding: 20px; }
+
+.dropzone {
+  border: 2px dashed #c9cfe8; border-radius: var(--radius);
+  background: var(--blue-softer);
+  padding: 30px 20px; text-align: center;
+  color: var(--ink-light); font-size: 14px;
+  transition: border-color .15s, background .15s;
+  margin-bottom: 16px;
+}
+.dropzone.dragover { border-color: var(--blue); background: var(--blue-soft); }
+.dropzone strong { color: var(--blue); }
+.dropzone .big { font-size: 26px; display: block; margin-bottom: 6px; }
+.dropzone input[type=file] { display: none; }
+.dropzone .browse {
+  color: var(--blue); font-weight: 600; cursor: pointer; text-decoration: underline;
+}
+
+#md-editor {
+  width: 100%; min-height: 420px; resize: vertical;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-family: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+  font-size: 13px; line-height: 1.6; color: var(--navy);
+  background: #fbfcfd;
+}
+#md-editor:focus { outline: 2px solid var(--blue-soft); border-color: var(--blue); }
+
+.setup-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+.parse-status {
+  margin-top: 14px; padding: 12px 14px; border-radius: var(--radius-sm);
+  font-size: 13.5px; display: none;
+}
+.parse-status.ok { display: block; background: var(--green-soft); color: var(--green); }
+.parse-status.err { display: block; background: var(--pink-soft); color: var(--pink); }
+
+.cheatsheet { font-size: 13px; color: var(--ink-light); }
+.cheatsheet h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--ink-light); margin: 14px 0 6px; }
+.cheatsheet h4:first-child { margin-top: 0; }
+.cheatsheet code {
+  background: #f0f1f4; border: 1px solid var(--border-soft);
+  border-radius: 4px; padding: 1px 5px;
+  font-size: 11.5px; font-family: ui-monospace, Menlo, Consolas, monospace;
+  color: var(--navy);
+}
+.cheatsheet li { margin: 4px 0 4px 16px; }
+
+/* ============================================================
+   Quiz page layout
+   ============================================================ */
+#quiz-page .layout {
+  display: grid; grid-template-columns: 1fr 290px;
+  gap: 28px; max-width: 1480px; margin: 0 auto;
+  padding: 26px 28px 60px;
+  align-items: start;
+}
+@media (max-width: 980px) { #quiz-page .layout { grid-template-columns: 1fr; } }
+
+.quiz-header { margin-bottom: 18px; }
+.quiz-title {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 26px; font-weight: 800; color: var(--navy);
+  letter-spacing: -.5px;
+}
+.quiz-title .icon {
+  width: 42px; height: 42px; border-radius: 12px;
+  background: var(--pink-soft); display: flex;
+  align-items: center; justify-content: center;
+}
+.quiz-title .icon svg { width: 22px; height: 22px; stroke: var(--pink); }
+.quiz-desc { margin-top: 16px; color: var(--ink); font-size: 14.5px; }
+#back-btn { margin-top: 16px; }
+
+/* Question card */
+.qcard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 26px 28px 30px; margin-top: 18px;
+}
+.qcard-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.qcard h2 { font-size: 19px; font-weight: 700; color: var(--navy); }
+.q-badges { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.badge {
+  font-size: 12.5px; font-weight: 500; color: var(--ink);
+  background: var(--badge-bg); border-radius: 5px; padding: 4px 11px;
+}
+.badge.answered { background: var(--green-soft); color: var(--green); }
+
+.flag-btn {
+  background: var(--blue-soft); color: var(--blue);
+  border: none; border-radius: var(--radius-sm);
+  padding: 8px 16px; font-size: 13.5px; font-weight: 600;
+  white-space: nowrap;
+}
+.flag-btn:hover { background: #d6dcf9; }
+
+.q-body {
+  background: #f6f7f9; border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  padding: 20px 22px; margin-top: 20px;
+}
+.q-number { font-size: 13.5px; color: var(--ink-light); margin-bottom: 6px; }
+.q-text { color: var(--navy); font-size: 15px; white-space: pre-wrap; }
+.q-text code {
+  background: #eceef2; border-radius: 4px; padding: 1px 5px;
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px;
+}
+
+/* Typed answer — fake editor toolbar like the screenshot */
+.editor-shell { margin-top: 18px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
+.editor-toolbar {
+  display: flex; gap: 4px; padding: 8px 10px;
+  border-bottom: 1px solid var(--border-soft); flex-wrap: wrap;
+}
+.tool-group { display: flex; gap: 2px; padding-right: 8px; margin-right: 4px; border-right: 1px solid var(--border-soft); }
+.tool-group:last-child { border-right: none; }
+.tbtn {
+  width: 30px; height: 28px; border: none; background: transparent;
+  border-radius: 5px; color: var(--ink); font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.tbtn:hover { background: #f0f1f4; }
+.tbtn svg { width: 15px; height: 15px; stroke: var(--ink); }
+.typed-area {
+  width: 100%; min-height: 170px; border: none; resize: vertical;
+  padding: 14px 16px; font-size: 14.5px; line-height: 1.6;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+.typed-area:focus { outline: none; }
+
+/* Choices */
+.choices { margin-top: 18px; display: flex; flex-direction: column; gap: 4px; }
+.choice {
+  display: flex; align-items: flex-start; gap: 11px;
+  padding: 11px 14px; border-radius: var(--radius-sm);
+  cursor: pointer; transition: background .12s;
+  font-size: 14.5px; color: var(--navy);
+}
+.choice:hover { background: #f3f4f7; }
+.choice input { margin-top: 3px; accent-color: var(--blue); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+.choice.selected { background: var(--blue-softer); }
+.choice .opt-prefix { color: var(--ink-light); margin-right: 2px; }
+
+/* Cloze */
+.cloze-body { margin-top: 18px; font-size: 14.5px; color: var(--navy); line-height: 2.3; }
+.cloze-input {
+  border: 1px solid var(--border); border-radius: 5px;
+  padding: 4px 9px; min-width: 110px;
+  background: #fff; font-size: 13.5px;
+  margin: 0 3px;
+}
+.cloze-input:focus { outline: 2px solid var(--blue-soft); border-color: var(--blue); }
+
+.qcard-footer { display: flex; justify-content: space-between; margin-top: 26px; gap: 10px; }
+.qcard-footer .spacer { flex: 1; }
+
+/* Sidebar — quiz navigation */
+.sidebar { position: sticky; top: 22px; }
+.nav-card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 20px 22px;
+}
+.nav-card h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 16px; }
+.navdots { display: flex; flex-wrap: wrap; gap: 11px; margin-bottom: 18px; }
+
+.navdot {
+  position: relative;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fff; color: var(--blue);
+  font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .12s, background .12s, box-shadow .12s;
+}
+.navdot:hover { border-color: var(--blue); }
+.navdot.answered { background: #d4d6da; border-color: #d4d6da; color: var(--ink); }
+.navdot.current { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue) inset; }
+.navdot .flag-mark {
+  position: absolute; top: -5px; right: -5px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #111; display: flex; align-items: center; justify-content: center;
+}
+.navdot .flag-mark svg { width: 9px; height: 9px; fill: var(--pink); stroke: var(--pink); }
+
+.last-saved { font-size: 13px; color: var(--ink-light); margin-bottom: 14px; }
+.finish-btn { width: 100%; }
+
+.timer-card {
+  margin-top: 16px; background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 16px 22px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.timer-card .label { font-size: 13px; color: var(--ink-light); }
+.timer-card .time {
+  font-size: 19px; font-weight: 800; color: var(--navy);
+  font-variant-numeric: tabular-nums; letter-spacing: .5px;
+}
+.timer-card.low .time { color: var(--pink); }
+
+/* ============================================================
+   Summary & results
+   ============================================================ */
+.summary-table { width: 100%; border-collapse: collapse; margin-top: 18px; font-size: 14px; }
+.summary-table th {
+  text-align: left; font-size: 12px; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--ink-light);
+  padding: 8px 12px; border-bottom: 1px solid var(--border);
+}
+.summary-table td { padding: 11px 12px; border-bottom: 1px solid var(--border-soft); color: var(--navy); }
+.summary-table tr:last-child td { border-bottom: none; }
+.status-pill { font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.status-pill.done { background: var(--green-soft); color: var(--green); }
+.status-pill.pending { background: var(--badge-bg); color: var(--ink-light); }
+.status-pill.flagged { background: var(--pink-soft); color: var(--pink); }
+.status-pill.manual { background: var(--amber-soft); color: var(--amber); }
+.summary-table .qlink { color: var(--blue); text-decoration: none; font-weight: 600; cursor: pointer; }
+.summary-table .qlink:hover { text-decoration: underline; }
+
+.score-hero {
+  text-align: center; padding: 30px 20px 24px;
+}
+.score-hero .pct { font-size: 44px; font-weight: 800; color: var(--navy); letter-spacing: -1px; }
+.score-hero .sub { color: var(--ink-light); font-size: 14px; margin-top: 4px; }
+.copy-note { font-size: 12.5px; color: var(--ink-light); margin-top: 12px; max-width: 640px; }
+.cheatsheet-foot { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border-soft); }
+.cheatsheet-foot .copy-note { margin-top: 10px; }
+.result-row td .res-detail { font-size: 12.5px; color: var(--ink-light); margin-top: 3px; }
+.mark-good { color: var(--green); font-weight: 700; }
+.mark-bad { color: var(--pink); font-weight: 700; }
+.mark-manual { color: var(--amber); font-weight: 700; }
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border); background: var(--card);
+  margin-top: 50px; padding: 34px 28px; font-size: 13px; color: var(--ink-light);
+}
+.site-footer .inner { max-width: 1480px; margin: 0 auto; display: flex; justify-content: space-between; gap: 30px; flex-wrap: wrap; }
+.site-footer strong { color: var(--navy); }
+.site-footer a { color: var(--ink-light); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SETUP PAGE
+     ============================================================ -->
+<div id="setup-page">
+  <div class="topbar">
+    <div class="brand"><span class="bowl">🍜</span> noodle</div>
+    <div class="breadcrumb"><a href="#">Dashboard</a><span class="sep">–</span><span>Quiz builder</span></div>
+  </div>
+
+  <div class="wrap">
+    <div class="setup-hero">
+      <h1><span class="icon">🍜</span> Build an exam</h1>
+      <p>Write your exam in markdown below, or drag and drop an existing <strong>.md</strong> file. When the structure parses cleanly, start the attempt.</p>
+    </div>
+
+    <div class="setup-grid">
+      <div class="panel">
+        <div class="panel-head">Exam source (.md)</div>
+        <div class="panel-body">
+          <div class="dropzone" id="dropzone">
+            <span class="big">📄</span>
+            Drag &amp; drop a <strong>.md</strong> exam file here, or
+            <label class="browse" for="file-input">browse</label>
+            <input type="file" id="file-input" accept=".md,.markdown,.txt">
+          </div>
+          <textarea id="md-editor" spellcheck="false" aria-label="Exam markdown source"></textarea>
+          <div class="setup-actions">
+            <button class="btn-primary" id="start-btn">Start quiz</button>
+            <button class="btn" id="validate-btn">Validate</button>
+            <button class="btn" id="sample-btn">Load sample exam</button>
+          </div>
+          <div class="parse-status" id="parse-status" role="status"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="panel-head">Format cheatsheet</div>
+          <div class="panel-body cheatsheet">
+            <h4>Header</h4>
+            <li><code>**Time=00:15:30**</code></li>
+            <li><code>**Title=...**</code></li>
+            <li><code>**Description=...**</code></li>
+            <li><code>**TotalMarks=100**</code> <em>(optional)</em></li>
+            <li><code>**ShuffleQuestions=false**</code> <em>(optional)</em></li>
+            <h4>Questions</h4>
+            <li><code>## Question 1</code></li>
+            <li><code>**Type=multiple-choice-single**</code></li>
+            <li><code>**Type=multiple-choice-multi**</code></li>
+            <li><code>**Type=typed**</code></li>
+            <li><code>**Type=cloze**</code></li>
+            <li><code>**Marks=10**</code></li>
+            <h4>Options</h4>
+            <li>Single: <code>- Sydney</code>, correct: <code>- *Canberra*</code></li>
+            <li>Multi: <code>- [ ] wrong</code>, <code>- [*] correct</code></li>
+            <li>Cloze blanks: <code>[[Paris]]</code></li>
+            <h4>Typed model answer <em>(optional)</em></h4>
+            <li><code>**Answer=...**</code> — a single-line model answer, hidden from the candidate and used when marking.</li>
+            <div class="cheatsheet-foot">
+              <button class="btn-soft" id="gen-prompt-btn" style="width:100%">Copy "generate an exam" prompt</button>
+              <div class="copy-note" id="gen-note">Copies a prompt containing these rules. Paste it into an AI assistant, fill in your exam details, and it returns a ready-to-use .md file.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     QUIZ PAGE
+     ============================================================ -->
+<div id="quiz-page" class="hidden">
+  <div class="topbar">
+    <div class="brand"><span class="bowl">🍜</span> noodle</div>
+    <div class="breadcrumb">
+      <a href="#" id="bc-dashboard">Dashboard</a><span class="sep">–</span>
+      <span>Subject</span><span class="sep">–</span>
+      <span>NOODLE101</span><span class="sep">–</span>
+      <span id="bc-title">Mock Exam</span><span class="sep">–</span>
+      <span id="bc-title2">Mock Exam</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Main column -->
+    <div>
+      <div class="quiz-header">
+        <div class="quiz-title">
+          <span class="icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <span id="quiz-title-text">Mock Exam</span>
+        </div>
+        <button class="btn" id="back-btn">Back</button>
+        <div class="quiz-desc" id="quiz-desc"></div>
+      </div>
+
+      <!-- Question view -->
+      <div id="question-view"></div>
+
+      <!-- Summary view (finish attempt) -->
+      <div id="summary-view" class="hidden">
+        <div class="qcard">
+          <h2 style="font-size:19px;color:var(--navy)">Summary of attempt</h2>
+          <table class="summary-table">
+            <thead><tr><th>Question</th><th>Status</th><th></th></tr></thead>
+            <tbody id="summary-body"></tbody>
+          </table>
+          <div class="qcard-footer">
+            <button class="btn" id="summary-back">Return to attempt</button>
+            <span class="spacer"></span>
+            <button class="btn-primary" id="submit-all">Submit all and finish</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results view -->
+      <div id="results-view" class="hidden">
+        <div class="qcard">
+          <div class="score-hero">
+            <div class="pct" id="score-pct">—</div>
+            <div class="sub" id="score-sub"></div>
+          </div>
+          <table class="summary-table">
+            <thead><tr><th>Question</th><th>Result</th><th style="text-align:right">Marks</th></tr></thead>
+            <tbody id="results-body"></tbody>
+          </table>
+          <div class="qcard-footer">
+            <button class="btn-soft" id="copy-prompt">Copy marking prompt</button>
+            <span class="spacer"></span>
+            <button class="btn-primary" id="results-done">Back to quiz builder</button>
+          </div>
+          <div class="copy-note" id="copy-note">Paste this into an AI assistant to have it mark your attempt as a practice exam — it includes each question, its marks, the correct/model answer, and your response.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="nav-card">
+        <h3>Quiz navigation</h3>
+        <div class="navdots" id="navdots"></div>
+        <div class="last-saved">Last saved: <span id="last-saved">—</span></div>
+        <button class="btn-soft finish-btn" id="finish-btn">Finish attempt ...</button>
+      </div>
+      <div class="timer-card" id="timer-card">
+        <span class="label">Time left</span>
+        <span class="time" id="timer">--:--:--</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="inner">
+      <div>
+        <strong>noodle</strong> — an open exam platform.<br>
+        Slurp responsibly. Exams are saved in your browser session only.
+      </div>
+      <div>
+        © 2026 noodle &nbsp;|&nbsp; <a href="#">Help</a> &nbsp;|&nbsp; <a href="#">Accessibility</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ----------------------------------------------------------
+     Sample exam (matches the spec exactly)
+     ---------------------------------------------------------- */
+  var SAMPLE = [
+    '**Time=00:15:30**',
+    '**Title=Sample Exam - Computer Science 101**',
+    '**Description=Mid-term assessment covering fundamentals.**',
+    '**TotalMarks=100**',
+    '**ShuffleQuestions=false**',
+    '',
+    '## Question 1',
+    '**Type=multiple-choice-single**',
+    '**Marks=10**',
+    'What is the capital of Australia?',
+    '- Sydney',
+    '- *Canberra*',
+    '- Melbourne',
+    '- Perth',
+    '',
+    '## Question 2',
+    '**Type=multiple-choice-multi**',
+    '**Marks=15**',
+    'Select all correct statements about HTML:',
+    '- [ ] HTML is a programming language.',
+    '- [*] HTML stands for HyperText Markup Language.',
+    '- [*] It is used for structuring web pages.',
+    '- [ ] HTML cannot include CSS or JS.',
+    '',
+    '## Question 3',
+    '**Type=typed**',
+    '**Marks=20**',
+    '**Answer=let is block-scoped and can be reassigned; const is block-scoped but cannot be reassigned (though objects it points to can still be mutated).**',
+    'Explain the difference between `let` and `const` in JavaScript.',
+    '',
+    '## Question 4',
+    '**Type=cloze**',
+    '**Marks=25**',
+    'Complete the sentence: The capital of France is [[Paris]].',
+    'It is known for the [[Eiffel Tower]].',
+    'The sum of 2 + 2 is [[4]].'
+  ].join('\n');
+
+  /* ----------------------------------------------------------
+     Markdown exam parser
+     ---------------------------------------------------------- */
+  function stripComments(s) { return s.replace(/<!--[\s\S]*?-->/g, ''); }
+
+  function parseHeaderMeta(block, meta) {
+    var re = /\*\*\s*([A-Za-z]+)\s*=\s*([^*]+?)\s*\*\*/g, m;
+    while ((m = re.exec(block)) !== null) {
+      meta[m[1].toLowerCase()] = m[2].trim();
+    }
+  }
+
+  function parseExam(src) {
+    src = stripComments(src.replace(/\r\n/g, '\n'));
+    var lines = src.split('\n');
+    var headerLines = [], qBlocks = [], cur = null;
+    for (var i = 0; i < lines.length; i++) {
+      if (/^##\s*Question/i.test(lines[i])) {
+        cur = [];
+        qBlocks.push(cur);
+      } else if (cur) {
+        cur.push(lines[i]);
+      } else {
+        headerLines.push(lines[i]);
+      }
+    }
+
+    var meta = {};
+    parseHeaderMeta(headerLines.join('\n'), meta);
+
+    if (!qBlocks.length) throw new Error('No questions found. Each question must start with "## Question N".');
+
+    var questions = qBlocks.map(function (blockLines, idx) {
+      var qmeta = {};
+      var bodyLines = [];
+      blockLines.forEach(function (line) {
+        var mm = line.match(/^\s*\*\*\s*([A-Za-z]+)\s*=\s*([^*]+?)\s*\*\*\s*$/);
+        if (mm) { qmeta[mm[1].toLowerCase()] = mm[2].trim(); }
+        else bodyLines.push(line);
+      });
+
+      var type = (qmeta.type || '').toLowerCase();
+      var marks = parseFloat(qmeta.marks);
+      if (!type) throw new Error('Question ' + (idx + 1) + ': missing **Type=...**');
+      if (isNaN(marks)) throw new Error('Question ' + (idx + 1) + ': missing or invalid **Marks=...**');
+
+      var q = { id: idx, type: type, marks: marks, prompt: '', options: [], cloze: null, modelAnswer: (qmeta.answer || '').trim() };
+
+      if (type === 'multiple-choice-single') {
+        var promptLines = [], opts = [];
+        bodyLines.forEach(function (line) {
+          var om = line.match(/^\s*-\s+(.*)$/);
+          if (om) {
+            var t = om[1].trim();
+            var correct = /^\*.*\*$/.test(t);
+            opts.push({ text: correct ? t.replace(/^\*|\*$/g, '').trim() : t, correct: correct });
+          } else promptLines.push(line);
+        });
+        if (opts.length < 2) throw new Error('Question ' + (idx + 1) + ': single-choice needs at least 2 options.');
+        if (!opts.some(function (o) { return o.correct; })) throw new Error('Question ' + (idx + 1) + ': mark the correct option with *asterisks*.');
+        q.prompt = promptLines.join('\n').trim();
+        q.options = opts;
+
+      } else if (type === 'multiple-choice-multi') {
+        var pLines = [], mopts = [];
+        bodyLines.forEach(function (line) {
+          var om = line.match(/^\s*-\s*\[(\s|x|X|\*)\]\s*(.*)$/);
+          if (om) {
+            mopts.push({ text: om[2].trim(), correct: om[1] === '*' || om[1].toLowerCase() === 'x' });
+          } else pLines.push(line);
+        });
+        if (mopts.length < 2) throw new Error('Question ' + (idx + 1) + ': multi-choice needs at least 2 options like "- [ ] text".');
+        q.prompt = pLines.join('\n').trim();
+        q.options = mopts;
+
+      } else if (type === 'typed') {
+        q.prompt = bodyLines.join('\n').trim();
+        if (!q.prompt) throw new Error('Question ' + (idx + 1) + ': typed question has no prompt text.');
+
+      } else if (type === 'cloze') {
+        var raw = bodyLines.join('\n').trim();
+        if (!raw) throw new Error('Question ' + (idx + 1) + ': cloze question has no text.');
+        var answers = [];
+        var segs = [];
+        var lastIdx = 0;
+        var re = /\[\[([^\]]+)\]\]/g, cm;
+        while ((cm = re.exec(raw)) !== null) {
+          segs.push({ t: 'text', v: raw.slice(lastIdx, cm.index) });
+          segs.push({ t: 'blank', i: answers.length });
+          answers.push(cm[1].trim());
+          lastIdx = cm.index + cm[0].length;
+        }
+        segs.push({ t: 'text', v: raw.slice(lastIdx) });
+        if (!answers.length) throw new Error('Question ' + (idx + 1) + ': cloze needs at least one [[answer]] blank.');
+        q.cloze = { segments: segs, answers: answers };
+        q.prompt = '';
+
+      } else {
+        throw new Error('Question ' + (idx + 1) + ': unknown type "' + type + '".');
+      }
+      return q;
+    });
+
+    var totalMarks = parseFloat(meta.totalmarks);
+    if (isNaN(totalMarks)) {
+      totalMarks = questions.reduce(function (s, q) { return s + q.marks; }, 0);
+    }
+
+    var timeStr = meta.time || '01:00:00';
+    var tParts = timeStr.split(':').map(Number);
+    var seconds = 0;
+    if (tParts.length === 3) seconds = tParts[0] * 3600 + tParts[1] * 60 + tParts[2];
+    else if (tParts.length === 2) seconds = tParts[0] * 60 + tParts[1];
+    else seconds = tParts[0] || 3600;
+
+    return {
+      title: meta.title || 'Untitled Exam',
+      description: meta.description || '',
+      totalMarks: totalMarks,
+      shuffle: (meta.shufflequestions || 'false').toLowerCase() === 'true',
+      timeSeconds: seconds,
+      questions: questions
+    };
+  }
+
+  /* ----------------------------------------------------------
+     State
+     ---------------------------------------------------------- */
+  var exam = null;
+  var order = [];          // display order of question indices
+  var answers = {};        // qid -> answer (string | number | array | array of strings)
+  var flags = {};          // qid -> bool
+  var currentPos = 0;      // position within order
+  var timerInterval = null;
+  var timeLeft = 0;
+  var view = 'question';   // question | summary | results
+
+  /* ----------------------------------------------------------
+     DOM helpers
+     ---------------------------------------------------------- */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmtPrompt(s) {
+    // escape, then render `code` spans
+    return esc(s).replace(/`([^`]+)`/g, '<code>$1</code>');
+  }
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function fmtClock(sec) {
+    var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return pad(h) + ':' + pad(m) + ':' + pad(s);
+  }
+  function nowStamp() {
+    var d = new Date();
+    return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2) +
+      ', ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  function markSaved() { $('last-saved').textContent = nowStamp(); }
+
+  function isAnswered(q) {
+    var a = answers[q.id];
+    if (a == null) return false;
+    if (q.type === 'typed') return String(a).trim() !== '';
+    if (q.type === 'multiple-choice-single') return typeof a === 'number';
+    if (q.type === 'multiple-choice-multi') return Array.isArray(a) && a.length > 0;
+    if (q.type === 'cloze') return Array.isArray(a) && a.some(function (v) { return String(v).trim() !== ''; });
+    return false;
+  }
+
+  /* ----------------------------------------------------------
+     Setup page wiring
+     ---------------------------------------------------------- */
+  var editor = $('md-editor');
+  editor.value = SAMPLE;
+
+  function showStatus(ok, msg) {
+    var el = $('parse-status');
+    el.className = 'parse-status ' + (ok ? 'ok' : 'err');
+    el.textContent = msg;
+  }
+
+  $('sample-btn').addEventListener('click', function () {
+    editor.value = SAMPLE;
+    showStatus(true, 'Sample exam loaded.');
+  });
+
+  $('validate-btn').addEventListener('click', function () {
+    try {
+      var ex = parseExam(editor.value);
+      showStatus(true, '✓ Valid — "' + ex.title + '", ' + ex.questions.length + ' questions, ' + ex.totalMarks + ' marks, time ' + fmtClock(ex.timeSeconds) + '.');
+    } catch (e) {
+      showStatus(false, '✕ ' + e.message);
+    }
+  });
+
+  // Drag & drop
+  var dz = $('dropzone');
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add('dragover'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove('dragover'); });
+  });
+  dz.addEventListener('drop', function (e) {
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) readFile(f);
+  });
+  $('file-input').addEventListener('change', function (e) {
+    if (e.target.files[0]) readFile(e.target.files[0]);
+    e.target.value = '';
+  });
+  function readFile(f) {
+    var r = new FileReader();
+    r.onload = function () {
+      editor.value = r.result;
+      showStatus(true, 'Loaded "' + f.name + '".');
+    };
+    r.onerror = function () { showStatus(false, 'Could not read that file.'); };
+    r.readAsText(f);
+  }
+
+  $('start-btn').addEventListener('click', function () {
+    try {
+      var ex = parseExam(editor.value);
+      startQuiz(ex);
+    } catch (e) {
+      showStatus(false, '✕ ' + e.message);
+    }
+  });
+
+  /* ----------------------------------------------------------
+     Quiz lifecycle
+     ---------------------------------------------------------- */
+  function startQuiz(ex) {
+    exam = ex;
+    answers = {}; flags = {}; currentPos = 0; view = 'question';
+    order = ex.questions.map(function (_, i) { return i; });
+    if (ex.shuffle) {
+      for (var i = order.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = order[i]; order[i] = order[j]; order[j] = t;
+      }
+    }
+
+    $('quiz-title-text').textContent = ex.title;
+    $('bc-title').textContent = ex.title;
+    $('bc-title2').textContent = ex.title;
+    $('quiz-desc').textContent = ex.description;
+
+    timeLeft = ex.timeSeconds;
+    clearInterval(timerInterval);
+    $('timer-card').classList.remove('low');
+    $('timer').textContent = fmtClock(timeLeft);
+    timerInterval = setInterval(function () {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        clearInterval(timerInterval);
+        $('timer').textContent = fmtClock(0);
+        showResults(); // auto-submit
+        return;
+      }
+      $('timer').textContent = fmtClock(timeLeft);
+      if (timeLeft <= 60) $('timer-card').classList.add('low');
+    }, 1000);
+
+    $('setup-page').classList.add('hidden');
+    $('quiz-page').classList.remove('hidden');
+    markSaved();
+    renderAll();
+    window.scrollTo(0, 0);
+  }
+
+  function exitToSetup() {
+    clearInterval(timerInterval);
+    $('quiz-page').classList.add('hidden');
+    $('setup-page').classList.remove('hidden');
+    window.scrollTo(0, 0);
+  }
+
+  $('back-btn').addEventListener('click', function () {
+    if (view === 'results' || confirm('Leave this attempt? Your answers will be discarded.')) exitToSetup();
+  });
+  $('bc-dashboard').addEventListener('click', function (e) {
+    e.preventDefault();
+    if (view === 'results' || confirm('Leave this attempt? Your answers will be discarded.')) exitToSetup();
+  });
+
+  /* ----------------------------------------------------------
+     Rendering — navigation dots
+     ---------------------------------------------------------- */
+  var FLAG_SVG = '<svg viewBox="0 0 24 24"><path d="M5 3v18M5 4h12l-3 4 3 4H5"/></svg>';
+
+  function renderNav() {
+    var wrap = $('navdots');
+    wrap.innerHTML = '';
+    order.forEach(function (qid, pos) {
+      var q = exam.questions[qid];
+      var b = document.createElement('button');
+      b.className = 'navdot';
+      b.type = 'button';
+      b.textContent = pos + 1;
+      b.setAttribute('aria-label', 'Question ' + (pos + 1) +
+        (isAnswered(q) ? ', answered' : ', not answered') +
+        (flags[qid] ? ', flagged' : ''));
+      if (isAnswered(q)) b.classList.add('answered');
+      if (pos === currentPos && view === 'question') b.classList.add('current');
+      if (flags[qid]) {
+        var fm = document.createElement('span');
+        fm.className = 'flag-mark';
+        fm.innerHTML = FLAG_SVG;
+        b.appendChild(fm);
+      }
+      b.addEventListener('click', function () {
+        currentPos = pos;
+        view = 'question';
+        renderAll();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  /* ----------------------------------------------------------
+     Rendering — question card
+     ---------------------------------------------------------- */
+  var TOOLBAR_HTML =
+    '<div class="editor-toolbar" aria-hidden="true">' +
+      '<div class="tool-group"><button class="tbtn" tabindex="-1" type="button">☰</button></div>' +
+      '<div class="tool-group">' +
+        '<button class="tbtn" tabindex="-1" type="button"><b>A</b>▾</button>' +
+        '<button class="tbtn" tabindex="-1" type="button"><b>B</b></button>' +
+        '<button class="tbtn" tabindex="-1" type="button"><i>I</i></button>' +
+        '<button class="tbtn" tabindex="-1" type="button">—</button>' +
+      '</div>' +
+      '<div class="tool-group">' +
+        '<button class="tbtn" tabindex="-1" type="button">≔</button>' +
+        '<button class="tbtn" tabindex="-1" type="button">⒈</button>' +
+        '<button class="tbtn" tabindex="-1" type="button">⇤</button>' +
+        '<button class="tbtn" tabindex="-1" type="button">⇥</button>' +
+      '</div>' +
+      '<div class="tool-group">' +
+        '<button class="tbtn" tabindex="-1" type="button">🔗</button>' +
+        '<button class="tbtn" tabindex="-1" type="button">⛓</button>' +
+      '</div>' +
+      '<div class="tool-group"><button class="tbtn" tabindex="-1" type="button">🖼</button></div>' +
+    '</div>';
+
+  function renderQuestion() {
+    var qid = order[currentPos];
+    var q = exam.questions[qid];
+    var container = $('question-view');
+    var answered = isAnswered(q);
+
+    var html = '<div class="qcard">' +
+      '<div class="qcard-top">' +
+        '<div><h2>Question ' + (currentPos + 1) + '</h2>' +
+          '<div class="q-badges">' +
+            '<span class="badge' + (answered ? ' answered' : '') + '">' + (answered ? 'Answer saved' : 'Not yet answered') + '</span>' +
+            '<span class="badge">Marked out of ' + q.marks.toFixed(2) + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<button class="flag-btn" id="flag-toggle">' + (flags[qid] ? 'Remove flag' : 'Flag question') + '</button>' +
+      '</div>' +
+      '<div class="q-body">' +
+        '<div class="q-number">Q' + (currentPos + 1) + '</div>';
+
+    if (q.type === 'cloze') {
+      html += '<div class="cloze-body" id="cloze-body">';
+      q.cloze.segments.forEach(function (seg) {
+        if (seg.t === 'text') {
+          html += fmtPrompt(seg.v).replace(/\n/g, '<br>');
+        } else {
+          var val = (answers[qid] && answers[qid][seg.i]) || '';
+          html += '<input class="cloze-input" data-blank="' + seg.i + '" value="' + esc(val) + '" aria-label="Blank ' + (seg.i + 1) + '">';
+        }
+      });
+      html += '</div>';
+    } else {
+      html += '<div class="q-text">' + fmtPrompt(q.prompt) + '</div>';
+    }
+    html += '</div>'; // q-body
+
+    if (q.type === 'typed') {
+      var v = answers[qid] || '';
+      html += '<div class="editor-shell">' + TOOLBAR_HTML +
+        '<textarea class="typed-area" id="typed-area" placeholder="Type your answer here…">' + esc(v) + '</textarea></div>';
+    }
+
+    if (q.type === 'multiple-choice-single') {
+      html += '<div class="choices" role="radiogroup">';
+      q.options.forEach(function (opt, i) {
+        var sel = answers[qid] === i;
+        html += '<label class="choice' + (sel ? ' selected' : '') + '">' +
+          '<input type="radio" name="mcq-' + qid + '" data-opt="' + i + '"' + (sel ? ' checked' : '') + '>' +
+          '<span><span class="opt-prefix">' + (i + 1) + '.</span> ' + fmtPrompt(opt.text) + '</span></label>';
+      });
+      html += '</div>';
+    }
+
+    if (q.type === 'multiple-choice-multi') {
+      var chosen = answers[qid] || [];
+      html += '<div class="choices">';
+      q.options.forEach(function (opt, i) {
+        var sel = chosen.indexOf(i) !== -1;
+        html += '<label class="choice' + (sel ? ' selected' : '') + '">' +
+          '<input type="checkbox" data-opt="' + i + '"' + (sel ? ' checked' : '') + '>' +
+          '<span><span class="opt-prefix">' + String.fromCharCode(97 + i) + '.</span> ' + fmtPrompt(opt.text) + '</span></label>';
+      });
+      html += '</div>';
+    }
+
+    html += '<div class="qcard-footer">' +
+      (currentPos > 0 ? '<button class="btn" id="prev-page">Previous page</button>' : '') +
+      '<span class="spacer"></span>' +
+      (currentPos < order.length - 1
+        ? '<button class="btn-primary" id="next-page">Next page</button>'
+        : '<button class="btn-primary" id="next-page">Finish attempt ...</button>') +
+      '</div></div>';
+
+    container.innerHTML = html;
+
+    // wire events
+    $('flag-toggle').addEventListener('click', function () {
+      flags[qid] = !flags[qid];
+      renderAll();
+    });
+
+    var next = $('next-page');
+    if (next) next.addEventListener('click', function () {
+      if (currentPos < order.length - 1) { currentPos++; renderAll(); window.scrollTo(0, 0); }
+      else showSummary();
+    });
+    var prev = $('prev-page');
+    if (prev) prev.addEventListener('click', function () {
+      if (currentPos > 0) { currentPos--; renderAll(); window.scrollTo(0, 0); }
+    });
+
+    var saveTimer = null;
+    function queueSave() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(function () { markSaved(); renderNav(); refreshBadges(qid); }, 400);
+    }
+    function refreshBadges(id) {
+      var badge = container.querySelector('.badge');
+      var ans = isAnswered(exam.questions[id]);
+      badge.textContent = ans ? 'Answer saved' : 'Not yet answered';
+      badge.className = 'badge' + (ans ? ' answered' : '');
+    }
+
+    if (q.type === 'typed') {
+      $('typed-area').addEventListener('input', function (e) {
+        answers[qid] = e.target.value;
+        queueSave();
+      });
+    }
+    if (q.type === 'multiple-choice-single') {
+      container.querySelectorAll('input[type=radio]').forEach(function (r) {
+        r.addEventListener('change', function () {
+          answers[qid] = parseInt(r.dataset.opt, 10);
+          container.querySelectorAll('.choice').forEach(function (c) { c.classList.remove('selected'); });
+          r.closest('.choice').classList.add('selected');
+          markSaved(); renderNav(); refreshBadges(qid);
+        });
+      });
+    }
+    if (q.type === 'multiple-choice-multi') {
+      container.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+        cb.addEventListener('change', function () {
+          var arr = [];
+          container.querySelectorAll('input[type=checkbox]').forEach(function (c) {
+            if (c.checked) arr.push(parseInt(c.dataset.opt, 10));
+            c.closest('.choice').classList.toggle('selected', c.checked);
+          });
+          answers[qid] = arr;
+          markSaved(); renderNav(); refreshBadges(qid);
+        });
+      });
+    }
+    if (q.type === 'cloze') {
+      container.querySelectorAll('.cloze-input').forEach(function (inp) {
+        inp.addEventListener('input', function () {
+          var arr = answers[qid] || new Array(q.cloze.answers.length).fill('');
+          arr[parseInt(inp.dataset.blank, 10)] = inp.value;
+          answers[qid] = arr;
+          queueSave();
+        });
+      });
+    }
+  }
+
+  /* ----------------------------------------------------------
+     Summary + results
+     ---------------------------------------------------------- */
+  function showSummary() {
+    view = 'summary';
+    var body = $('summary-body');
+    body.innerHTML = order.map(function (qid, pos) {
+      var q = exam.questions[qid];
+      var pills = isAnswered(q)
+        ? '<span class="status-pill done">Answer saved</span>'
+        : '<span class="status-pill pending">Not yet answered</span>';
+      if (flags[qid]) pills += ' <span class="status-pill flagged">Flagged</span>';
+      return '<tr><td>Question ' + (pos + 1) + '</td><td>' + pills +
+        '</td><td style="text-align:right"><a class="qlink" data-pos="' + pos + '">Return to question</a></td></tr>';
+    }).join('');
+    body.querySelectorAll('.qlink').forEach(function (a) {
+      a.addEventListener('click', function () {
+        currentPos = parseInt(a.dataset.pos, 10);
+        view = 'question';
+        renderAll();
+        window.scrollTo(0, 0);
+      });
+    });
+    renderAll();
+    window.scrollTo(0, 0);
+  }
+
+  function gradeQuestion(q) {
+    // returns {earned, auto, detail}
+    var a = answers[q.id];
+    if (q.type === 'typed') {
+      return {
+        earned: 0, auto: false,
+        detail: q.modelAnswer ? 'Requires manual marking · model answer provided' : 'Requires manual marking'
+      };
+    }
+    if (q.type === 'multiple-choice-single') {
+      var correctIdx = q.options.findIndex(function (o) { return o.correct; });
+      var ok = a === correctIdx;
+      return {
+        earned: ok ? q.marks : 0, auto: true,
+        detail: ok ? 'Correct' : 'Correct answer: ' + q.options[correctIdx].text
+      };
+    }
+    if (q.type === 'multiple-choice-multi') {
+      var chosen = Array.isArray(a) ? a : [];
+      var nCorrect = 0, nWrongChosen = 0, totalCorrect = 0;
+      q.options.forEach(function (o, i) {
+        if (o.correct) {
+          totalCorrect++;
+          if (chosen.indexOf(i) !== -1) nCorrect++;
+        } else if (chosen.indexOf(i) !== -1) nWrongChosen++;
+      });
+      var frac = Math.max(0, (nCorrect - nWrongChosen) / (totalCorrect || 1));
+      return {
+        earned: Math.round(frac * q.marks * 100) / 100, auto: true,
+        detail: nCorrect + '/' + totalCorrect + ' correct selected' + (nWrongChosen ? ', ' + nWrongChosen + ' incorrect selected' : '')
+      };
+    }
+    if (q.type === 'cloze') {
+      var arr = Array.isArray(a) ? a : [];
+      var right = 0;
+      q.cloze.answers.forEach(function (ans, i) {
+        if (String(arr[i] || '').trim().toLowerCase() === ans.toLowerCase()) right++;
+      });
+      var per = q.marks / q.cloze.answers.length;
+      return {
+        earned: Math.round(right * per * 100) / 100, auto: true,
+        detail: right + '/' + q.cloze.answers.length + ' blanks correct'
+      };
+    }
+    return { earned: 0, auto: true, detail: '' };
+  }
+
+  function showResults() {
+    view = 'results';
+    clearInterval(timerInterval);
+
+    var autoEarned = 0, autoPossible = 0, manualPossible = 0;
+    var rows = order.map(function (qid, pos) {
+      var q = exam.questions[qid];
+      var g = gradeQuestion(q);
+      var markCell, resCell;
+      if (!g.auto) {
+        manualPossible += q.marks;
+        markCell = '<span class="mark-manual">— / ' + q.marks + '</span>';
+        resCell = '<span class="status-pill manual">Manual marking</span><div class="res-detail">' + esc(g.detail) + '</div>';
+      } else {
+        autoEarned += g.earned; autoPossible += q.marks;
+        var full = g.earned >= q.marks - 1e-9;
+        markCell = '<span class="' + (full ? 'mark-good' : (g.earned > 0 ? '' : 'mark-bad')) + '">' + g.earned + ' / ' + q.marks + '</span>';
+        resCell = '<span class="status-pill ' + (full ? 'done' : 'pending') + '">' + (full ? 'Correct' : (g.earned > 0 ? 'Partially correct' : 'Incorrect')) + '</span>' +
+          '<div class="res-detail">' + esc(g.detail) + '</div>';
+      }
+      return '<tr class="result-row"><td>Question ' + (pos + 1) + '</td><td>' + resCell + '</td><td style="text-align:right">' + markCell + '</td></tr>';
+    });
+
+    $('results-body').innerHTML = rows.join('');
+    var pct = autoPossible ? Math.round((autoEarned / autoPossible) * 100) : 0;
+    $('score-pct').textContent = autoEarned + ' / ' + autoPossible;
+    $('score-sub').textContent = pct + '% on auto-marked questions' +
+      (manualPossible ? ' · ' + manualPossible + ' marks awaiting manual marking' : '') +
+      ' · exam total ' + exam.totalMarks + ' marks';
+
+    renderAll();
+    window.scrollTo(0, 0);
+  }
+
+  $('finish-btn').addEventListener('click', function () {
+    if (view !== 'results') showSummary();
+  });
+  $('summary-back').addEventListener('click', function () {
+    view = 'question';
+    renderAll();
+  });
+  $('submit-all').addEventListener('click', function () {
+    if (confirm('Once you submit, you will no longer be able to change your answers. Submit all and finish?')) {
+      showResults();
+    }
+  });
+  $('results-done').addEventListener('click', exitToSetup);
+
+  /* ----------------------------------------------------------
+     Marking prompt (copy to clipboard)
+     ---------------------------------------------------------- */
+  function userAnswerText(q) {
+    var a = answers[q.id];
+    if (q.type === 'typed') {
+      var t = (a || '').trim();
+      return t || '(left blank)';
+    }
+    if (q.type === 'multiple-choice-single') {
+      if (typeof a !== 'number') return '(no option selected)';
+      return q.options[a].text;
+    }
+    if (q.type === 'multiple-choice-multi') {
+      if (!Array.isArray(a) || !a.length) return '(no options selected)';
+      return a.map(function (i) { return q.options[i].text; }).join('; ');
+    }
+    if (q.type === 'cloze') {
+      var arr = Array.isArray(a) ? a : [];
+      return q.cloze.answers.map(function (_, i) {
+        return 'blank ' + (i + 1) + ': "' + (String(arr[i] || '').trim() || '(blank)') + '"';
+      }).join('; ');
+    }
+    return '';
+  }
+
+  function correctAnswerText(q) {
+    if (q.type === 'typed') {
+      return q.modelAnswer ? q.modelAnswer : '(no model answer provided — mark on merit)';
+    }
+    if (q.type === 'multiple-choice-single') {
+      var ci = q.options.findIndex(function (o) { return o.correct; });
+      return ci >= 0 ? q.options[ci].text : '(none marked)';
+    }
+    if (q.type === 'multiple-choice-multi') {
+      var c = q.options.filter(function (o) { return o.correct; }).map(function (o) { return o.text; });
+      return c.length ? c.join('; ') : '(none marked)';
+    }
+    if (q.type === 'cloze') {
+      return q.cloze.answers.map(function (ans, i) { return 'blank ' + (i + 1) + ': "' + ans + '"'; }).join('; ');
+    }
+    return '';
+  }
+
+  function buildMarkingPrompt() {
+    var lines = [];
+    lines.push('This is a PRACTICE exam submission. Please act as the marker.');
+    lines.push('For each question below, compare the candidate\'s answer against the correct/model answer and award marks out of the marks available, giving partial credit where it is reasonable. Briefly justify each mark, then give a total score and percentage with overall feedback.');
+    lines.push('');
+    lines.push('Exam: ' + exam.title);
+    if (exam.description) lines.push('Description: ' + exam.description);
+    lines.push('Total marks available: ' + exam.totalMarks);
+    lines.push('');
+    order.forEach(function (qid, pos) {
+      var q = exam.questions[qid];
+      lines.push('--- Question ' + (pos + 1) + ' (' + q.type + ', ' + q.marks + ' marks) ---');
+      lines.push('Question: ' + (q.type === 'cloze' ? clozePromptText(q) : q.prompt));
+      lines.push('Correct/model answer: ' + correctAnswerText(q));
+      lines.push('Candidate answer: ' + userAnswerText(q));
+      lines.push('');
+    });
+    lines.push('Now mark the attempt accordingly.');
+    return lines.join('\n');
+  }
+
+  function clozePromptText(q) {
+    var out = '';
+    q.cloze.segments.forEach(function (seg) {
+      out += seg.t === 'text' ? seg.v : '[[ blank ' + (seg.i + 1) + ' ]]';
+    });
+    return out.replace(/\s+\n/g, '\n').trim();
+  }
+
+  function flashNote(noteId, msg, ok) {
+    var note = $(noteId);
+    var original = note.dataset.original || note.textContent;
+    note.dataset.original = original;
+    note.textContent = msg;
+    note.style.color = ok === false ? 'var(--pink)' : 'var(--green)';
+    setTimeout(function () {
+      note.textContent = original;
+      note.style.color = '';
+    }, 2600);
+  }
+
+  function copyToClipboard(text, noteId, okMsg) {
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); flashNote(noteId, okMsg, true); }
+      catch (e) { flashNote(noteId, 'Could not copy automatically — select the text manually.', false); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { flashNote(noteId, okMsg, true); }, fallback);
+    } else { fallback(); }
+  }
+
+  $('copy-prompt').addEventListener('click', function () {
+    copyToClipboard(buildMarkingPrompt(), 'copy-note', '✓ Marking prompt copied to clipboard.');
+  });
+
+  /* ----------------------------------------------------------
+     "Generate an exam" prompt (setup page)
+     ---------------------------------------------------------- */
+  var FORMAT_RULES = [
+    'Output ONLY a valid markdown (.md) exam file — no commentary, no code fences around the whole thing.',
+    '',
+    'Header (place these at the very top, each on its own line, exactly as shown):',
+    '**Time=HH:MM:SS**            (the time limit, e.g. **Time=00:45:00**)',
+    '**Title=...**                (the exam title)',
+    '**Description=...**          (a one-line description)',
+    '**TotalMarks=100**           (optional — if omitted it is auto-calculated from question marks)',
+    '**ShuffleQuestions=false**   (optional — true or false)',
+    '',
+    'Questions: start each with a line "## Question N" (numbered from 1), followed by these bold key=value lines, then the question content.',
+    'Every question needs:',
+    '**Type=...**   one of: multiple-choice-single | multiple-choice-multi | typed | cloze',
+    '**Marks=...**  a number (the marks available for that question)',
+    '',
+    'Per type:',
+    '',
+    '1) multiple-choice-single  — single correct answer (radio buttons).',
+    '   Write the question text, then list options as "- option". Mark the ONE correct option by wrapping it in asterisks:',
+    '   ## Question 1',
+    '   **Type=multiple-choice-single**',
+    '   **Marks=10**',
+    '   What is the capital of Australia?',
+    '   - Sydney',
+    '   - *Canberra*',
+    '   - Melbourne',
+    '   - Perth',
+    '',
+    '2) multiple-choice-multi  — one or more correct answers (checkboxes).',
+    '   Use "- [ ] text" for wrong options and "- [*] text" for correct ones:',
+    '   ## Question 2',
+    '   **Type=multiple-choice-multi**',
+    '   **Marks=15**',
+    '   Select all correct statements about HTML:',
+    '   - [ ] HTML is a programming language.',
+    '   - [*] HTML stands for HyperText Markup Language.',
+    '   - [*] It is used for structuring web pages.',
+    '   - [ ] HTML cannot include CSS or JS.',
+    '',
+    '3) typed  — free-text answer, marked manually.',
+    '   Optionally add **Answer=...** (a single-line model answer used only for marking; it is hidden from the candidate). Then the question text:',
+    '   ## Question 3',
+    '   **Type=typed**',
+    '   **Marks=20**',
+    '   **Answer=let is block-scoped and reassignable; const is block-scoped but cannot be reassigned.**',
+    '   Explain the difference between `let` and `const` in JavaScript.',
+    '',
+    '4) cloze  — fill-in-the-blank. Wrap each correct answer in double square brackets [[answer]] inside the text. Marks are split evenly across the blanks:',
+    '   ## Question 4',
+    '   **Type=cloze**',
+    '   **Marks=25**',
+    '   The capital of France is [[Paris]]. It is known for the [[Eiffel Tower]]. The sum of 2 + 2 is [[4]].',
+    '',
+    'Use inline `code` with backticks where helpful. Keep one blank line between questions.'
+  ].join('\n');
+
+  function buildGeneratePrompt() {
+    return 'Please generate an .md file exam based on the following rules:\n\n' +
+      FORMAT_RULES +
+      '\n\nAdditionally, use the following info to generate a specific exam:\n' +
+      '[Describe the exam you want here — e.g. subject and topic, level/difficulty, number of questions, mix of question types, marks per question or total marks, and time limit.]';
+  }
+
+  $('gen-prompt-btn').addEventListener('click', function () {
+    copyToClipboard(buildGeneratePrompt(), 'gen-note', '✓ Prompt copied — paste it into an AI and fill in your exam details.');
+  });
+
+  /* ----------------------------------------------------------
+     Master render
+     ---------------------------------------------------------- */
+  function renderAll() {
+    $('question-view').classList.toggle('hidden', view !== 'question');
+    $('summary-view').classList.toggle('hidden', view !== 'summary');
+    $('results-view').classList.toggle('hidden', view !== 'results');
+    if (view === 'question') renderQuestion();
+    renderNav();
+  }
+
+})();
+</script>
+</body>
+</html>
