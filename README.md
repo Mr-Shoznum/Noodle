@@ -8,7 +8,7 @@ A self-contained, single-file exam platform inspired by Moodle quizzes. Author a
 
 A short walkthrough video covering authoring an exam, sitting it, and the marking flow:
 
-📹 **[`docs/noodle-demo.mp4`](docs/noodle-demo.mp4)**
+📹 **[`https://www.youtube.com/watch?v=LG0US-oRbPQ`](https://www.youtube.com/watch?v=LG0US-oRbPQ)**
 
 If you are viewing this README on a platform that renders inline HTML (e.g. a docs site), the video can be embedded directly:
 
